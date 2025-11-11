@@ -87,8 +87,8 @@ from simple_packing_model import PackingScheduleModelProblem3
 # ============================================================================
 
 n_orders_per_day_per_line = 5  # Number of orders per day per line
-n_lines = 24          # Number of production lines
-nr_days = 1  # Planning horizon in days
+n_lines = 10          # Number of production lines
+nr_days = 7  # Planning horizon in days
 
 qty = 2
 
