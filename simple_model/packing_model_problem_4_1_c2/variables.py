@@ -58,6 +58,14 @@ def define_variables(model):
         doc="Order i is scheduled before order k on the same line"
     )
 
+    # u(j): Line j is in use (binary)
+    # From Problem_4_1_c2.pdf Page 1
+    model.u = pyo.Var(
+        model.LINES,
+        domain=pyo.Binary,
+        doc="Line j is in use"
+    )
+
     # ============================================
     # Workforce Tracking Variables
     # ============================================

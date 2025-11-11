@@ -2,7 +2,10 @@
 
 ## Date: 2025-11-11
 
-## Update 4 (Latest - prodorder Assignment Requirement)
+## Update 5 (Latest - Line Utilization Variable)
+Added line utilization variable u(j) with associated constraints and objective term, based on the updated PDF specification.
+
+## Update 4 (prodorder Assignment Requirement)
 Updated prodorder constraint to require that orders must be assigned to a line, based on the corrected PDF Page 6 specification.
 
 ## Update 3 (OTIF Implementation)
@@ -15,12 +18,138 @@ Added the `shipped(d1,d)` binary variable and updated inventory balance constrai
 Initial correction to remove the `d' ≤ d` condition from the inventory balance equation.
 
 ## Summary
-1. **Update 4**: Updated prodorder constraint to require order assignment to a line
-2. **Update 3**: Added OTIF (On-Time In-Full) variables, constraints, and objective term to track delivery performance
-3. **Update 2**: Updated the inventory balance constraint and added shipped timing constraints
-4. **Update 1**: Initial correction to remove the `d' ≤ d` condition from the inventory balance equation
+1. **Update 5**: Added line utilization variable u(j) with constraints and objective term
+2. **Update 4**: Updated prodorder constraint to require order assignment to a line
+3. **Update 3**: Added OTIF (On-Time In-Full) variables, constraints, and objective term to track delivery performance
+4. **Update 2**: Updated the inventory balance constraint and added shipped timing constraints
+5. **Update 1**: Initial correction to remove the `d' ≤ d` condition from the inventory balance equation
 
 ## Changes Made
+
+### Update 5: Line Utilization Variable
+
+#### Overview:
+Added the binary decision variable `u(j)` to track which production lines are in use, along with constraints to enforce the relationship between line utilization and order assignments, and an objective term to encourage line consolidation.
+
+#### Updated PDF Specification:
+
+**Page 1 - New Variable:**
+```
+u(j) := line in use (binary)
+```
+
+**Page 4 - New Constraints:**
+```
+[u(j) = 1] ⇒ [∑_i x(i,j) > 0]  ∀j  (If line used, at least one order assigned)
+[u(j) = 0] ⇒ [∑_i x(i,j) = 0]  ∀j  (If line not used, no orders assigned)
+```
+
+**Page 9 - New Objective Term:**
+```
+total_not_utilized = ∑_j u(j)
+
+where the full objective is:
+f = α * otif + β * wip_obj + γ * workforce + δ * total_not_utilized
+```
+
+#### Implementation:
+
+**1. Added u(j) Variable (variables.py)**
+
+**Location:** [simple_model/packing_model_problem_4_1_c2/variables.py](packing_model_problem_4_1_c2/variables.py:61-67)
+
+```python
+# u(j): Line j is in use (binary)
+# From Problem_4_1_c2.pdf Page 1
+model.u = pyo.Var(
+    model.LINES,
+    domain=pyo.Binary,
+    doc="Line j is in use"
+)
+```
+
+**2. Added Line Utilization Constraints (constraints/assignment.py)**
+
+**Location:** [simple_model/packing_model_problem_4_1_c2/constraints/assignment.py](packing_model_problem_4_1_c2/constraints/assignment.py:93-134)
+
+**Constraint 1: Line Used If Assigned**
+```python
+def line_used_if_assigned_rule(m, j):
+    """
+    If line j is in use, at least one order must be assigned to it.
+
+    [u(j) = 1] ⇒ [∑_i x(i,j) > 0]
+
+    Reformulated as: ∑_i x(i,j) ≥ epsilon * u(j)
+    """
+    return sum(m.x[i, j] for i in m.ORDERS) >= m.epsilon * m.u[j]
+```
+
+**Constraint 2: Line Not Used If Empty**
+```python
+def line_not_used_if_empty_rule(m, j):
+    """
+    If line j is not in use, no orders can be assigned to it.
+
+    [u(j) = 0] ⇒ [∑_i x(i,j) = 0]
+
+    Reformulated as: ∑_i x(i,j) ≤ M * u(j)
+    """
+    # M can be the total number of orders as upper bound
+    return sum(m.x[i, j] for i in m.ORDERS) <= m.n_orders * m.u[j]
+```
+
+**3. Updated Objective Function (objective.py)**
+
+**Location:** [simple_model/packing_model_problem_4_1_c2/objective.py](packing_model_problem_4_1_c2/objective.py:92-102)
+
+**Updated `_not_utilized_term` method:**
+```python
+def _not_utilized_term(self, m):
+    """
+    Total not utilized term: Number of lines fully utilized.
+
+    Problem_4_1_c2 Page 9:
+    total_not_utilized = ∑_j u(j)
+
+    This counts the number of production lines that are in use.
+    Minimizing this encourages using fewer lines (consolidation).
+    """
+    return sum(m.u[j] for j in m.LINES)
+```
+
+#### Semantic Interpretation:
+
+The line utilization variable `u(j)` serves two purposes:
+
+1. **Tracking**: It explicitly tracks which production lines are actually being used in the schedule.
+
+2. **Optimization**: By including `∑_j u(j)` in the objective function with weight δ, the model is encouraged to consolidate production onto fewer lines when possible, which can:
+   - Reduce setup costs
+   - Simplify production management
+   - Reduce resource requirements
+   - Improve line efficiency
+
+The constraints ensure consistency:
+- If a line has orders assigned (`∑_i x(i,j) > 0`), then `u(j) = 1`
+- If a line has no orders assigned (`∑_i x(i,j) = 0`), then `u(j) = 0`
+
+#### Impact on Solution:
+
+**Standard Example Results:**
+- **Before Update 5**: Objective value = 4.00 (no line utilization penalty)
+- **After Update 5**: Objective value = 5.00 (with δ=0.5 default weight)
+  - Both lines in use: u(1)=1, u(2)=1
+  - Line utilization contribution: 0.5 * (1 + 1) = 1.0
+  - Total objective: 4.0 (original) + 1.0 (utilization) = 5.0
+
+**Display Enhancement:**
+The assignment matrix now shows line utilization status:
+```
+Line Utilization (u(j) variable):
+  Line 1: u(1)=1 (IN USE) - 2 orders assigned -> [1, 2]
+  Line 2: u(2)=1 (IN USE) - 2 orders assigned -> [3, 4]
+```
 
 ### Update 4: prodorder Assignment Requirement
 
@@ -316,6 +445,13 @@ All test cases run successfully with the OTIF implementation:
    - Default configuration: 240 demands, 240 orders, 48 lines
 
 ## Files Modified
+
+### Update 5: Line Utilization Variable
+1. `simple_model/packing_model_problem_4_1_c2/variables.py` - Added `u(j)` binary variable for line utilization
+2. `simple_model/packing_model_problem_4_1_c2/constraints/assignment.py` - Added line utilization constraints
+3. `simple_model/packing_model_problem_4_1_c2/objective.py` - Updated `_not_utilized_term` to use u(j)
+4. `simple_model/packing_model_problem_4_1_c2/model.py` - Updated `get_solution()` and `print_assignment_matrix()` to display line utilization
+5. `simple_model/CORRECTION_NOTES.md` - This document
 
 ### Update 4: prodorder Assignment Requirement
 1. `simple_model/packing_model_problem_4_1_c2/constraints/shipping.py` - Added `order_assignment_required` constraint

@@ -24,7 +24,7 @@ class ObjectiveManager:
     - otif = ∑_d priority(d) * (7 * late(d) + 3 * lateness(d))
     - wip_obj = ∑_u ∑_d inv(u,d)
     - workforce = workersrange
-    - total_not_utilized is not clearly defined in the PDF
+    - total_not_utilized = ∑_j u(j) (number of lines in use)
     """
 
     def __init__(self, data):
@@ -91,21 +91,15 @@ class ObjectiveManager:
 
     def _not_utilized_term(self, m):
         """
-        Total not utilized term.
+        Total not utilized term: Number of lines fully utilized.
 
-        Note: This term is not clearly specified in the PDF.
-        We could interpret it as:
-        1. Number of unassigned orders
-        2. Unused line capacity
-        3. Something else
+        Problem_4_1_c2 Page 9:
+        total_not_utilized = ∑_j u(j)
 
-        For now, we implement it as the number of unassigned orders.
+        This counts the number of production lines that are in use.
+        Minimizing this encourages using fewer lines (consolidation).
         """
-        # Count orders not assigned to any line
-        return sum(
-            1 - sum(m.x[i, j] for j in m.LINES)
-            for i in m.ORDERS
-        )
+        return sum(m.u[j] for j in m.LINES)
 
     def define_objective(self, model):
         """
@@ -118,7 +112,7 @@ class ObjectiveManager:
         1. OTIF (alpha): On-time delivery performance
         2. WIP (beta): Total inventory across types and demands
         3. Workforce (gamma): Workforce range (max - min)
-        4. Not utilized (delta): Unassigned orders or unused capacity
+        4. Not utilized (delta): Number of lines in use (encourages line consolidation)
         """
 
         def objective_rule(m):

@@ -87,7 +87,7 @@ class PackingScheduleModelProblem4_1_c2:
         # Define objective function
         define_objective(self.model, self.data)
 
-    def solve(self, solver_name='appsi_highs', tee=True, time_limit=None, mip_rel_gap=None):
+    def solve(self, solver_name='appsi_highs', tee=True, time_limit=None, mip_rel_gap=None, highs_options=None):
         """
         Solve the optimization model.
 
@@ -96,6 +96,7 @@ class PackingScheduleModelProblem4_1_c2:
             tee: Whether to stream solver output
             time_limit: Time limit in seconds (None for no limit)
             mip_rel_gap: Relative MIP gap tolerance (None for default)
+            highs_options: Dictionary of additional HiGHS-specific options
 
         Returns:
             Dictionary with results:
@@ -120,6 +121,11 @@ class PackingScheduleModelProblem4_1_c2:
                 solver.options['MIPGap'] = mip_rel_gap
             elif solver_name == 'cplex':
                 solver.options['mipgap'] = mip_rel_gap
+
+        # Apply HiGHS-specific performance options
+        if solver_name == 'appsi_highs' and highs_options:
+            for key, value in highs_options.items():
+                solver.highs_options[key] = value
 
         # Solve the model
         if solver_name == 'appsi_highs':
@@ -230,6 +236,11 @@ class PackingScheduleModelProblem4_1_c2:
                 'late': int(pyo.value(m.late[d]))
             }
 
+        # Extract line utilization
+        line_utilization = {}
+        for j in m.LINES:
+            line_utilization[j] = int(pyo.value(m.u[j]))
+
         return {
             'assignments': assignments,
             'demands': demands,
@@ -238,7 +249,8 @@ class PackingScheduleModelProblem4_1_c2:
             'workforce_summary': workforce_summary,
             'event_times': event_times,
             'shipped': shipped,
-            'otif': otif_data
+            'otif': otif_data,
+            'line_utilization': line_utilization
         }
 
     def print_solution_summary(self):
@@ -473,17 +485,19 @@ class PackingScheduleModelProblem4_1_c2:
             print(row)
 
         # Show line utilization
-        print(f"\nLine Utilization:")
+        print(f"\nLine Utilization (u(j) variable):")
         for j in m.LINES:
+            u_val = int(pyo.value(m.u[j]))
+            status = "IN USE" if u_val == 1 else "NOT IN USE"
             assigned_orders = []
             for i in m.ORDERS:
                 if pyo.value(m.x[i, j]) > 0.5:
                     assigned_orders.append(i)
 
             if assigned_orders:
-                print(f"  Line {j}: {len(assigned_orders)} orders assigned -> {assigned_orders}")
+                print(f"  Line {j}: u({j})={u_val} ({status}) - {len(assigned_orders)} orders assigned -> {assigned_orders}")
             else:
-                print(f"  Line {j}: No orders assigned")
+                print(f"  Line {j}: u({j})={u_val} ({status}) - No orders assigned")
 
         # Show by type
         print(f"\nAssignments by Type:")

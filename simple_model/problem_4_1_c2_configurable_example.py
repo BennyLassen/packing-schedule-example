@@ -83,11 +83,13 @@ n_orders_per_day_per_line = 5  # Number of orders per day per line
 n_lines = 24          # Number of production lines
 nr_days = 1  # Planning horizon in days
 
+qty = 2
+
 CONFIG = {
     # Problem dimensions
-    'n_types': 2,              # Number of unique product types
+    'n_types': 100,              # Number of unique product types
     'n_lines': n_lines,              # Number of production lines
-    'n_demands': n_orders_per_day_per_line * n_lines * nr_days,            # Number of shipping demands
+    'n_demands': int(n_orders_per_day_per_line * n_lines * nr_days/qty),            # Number of shipping demands
     # NOTE: n_orders will be calculated automatically based on demands
     'planning_horizon': 100.0, # Planning horizon in time units
 
@@ -104,8 +106,8 @@ CONFIG = {
     'due_date_end_pct': 0.9,      # Last due date at 90% of horizon
 
     # Demand quantity settings
-    'demand_qty_min': 1,          # Minimum quantity per demand
-    'demand_qty_max': 1,          # Maximum quantity per demand
+    'demand_qty_min': qty,          # Minimum quantity per demand
+    'demand_qty_max': qty,          # Maximum quantity per demand
 
     # Priority settings
     'priority_min': 5,            # Minimum priority weight

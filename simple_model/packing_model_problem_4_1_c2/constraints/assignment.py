@@ -5,6 +5,7 @@ Implements:
 - One assignment: Each order at most assigned to only one line
 - Processing time relationship
 - Time horizon constraints
+- Line utilization: Track which lines are in use
 """
 
 import pyomo.environ as pyo
@@ -19,6 +20,8 @@ def define_assignment_constraints(model):
     2. Processing time: c(i) = s(i) + ∑_j p(i,j) * x(i,j)  ∀i
     3. Time horizon: s(i) ≥ 0  ∀i
                      c(i) ≤ T_max  ∀i
+    4. Line utilization: [u(j) = 1] ⇒ [∑_i x(i,j) > 0]  ∀j
+                         [u(j) = 0] ⇒ [∑_i x(i,j) = 0]  ∀j
     """
 
     def one_assignment_rule(m, i):
@@ -85,6 +88,49 @@ def define_assignment_constraints(model):
         model.ORDERS,
         rule=completion_within_horizon_rule,
         doc="Completion times within planning horizon"
+    )
+
+    # ============================================
+    # Line Utilization Constraints
+    # ============================================
+
+    def line_used_if_assigned_rule(m, j):
+        """
+        If line j is in use, at least one order must be assigned to it.
+
+        [u(j) = 1] ⇒ [∑_i x(i,j) > 0]
+
+        Reformulated as: ∑_i x(i,j) ≥ epsilon * u(j)
+
+        This ensures that if u(j) = 1, then at least one order is assigned.
+        We use epsilon (small positive value) instead of strict > 0.
+        """
+        return sum(m.x[i, j] for i in m.ORDERS) >= m.epsilon * m.u[j]
+
+    model.line_used_if_assigned = pyo.Constraint(
+        model.LINES,
+        rule=line_used_if_assigned_rule,
+        doc="If line in use, at least one order assigned"
+    )
+
+    def line_not_used_if_empty_rule(m, j):
+        """
+        If line j is not in use, no orders can be assigned to it.
+
+        [u(j) = 0] ⇒ [∑_i x(i,j) = 0]
+
+        Reformulated as: ∑_i x(i,j) ≤ M * u(j)
+
+        This ensures that if u(j) = 0, then no orders are assigned.
+        If u(j) = 1, the constraint is relaxed (up to M orders allowed).
+        """
+        # M can be the total number of orders as upper bound
+        return sum(m.x[i, j] for i in m.ORDERS) <= m.n_orders * m.u[j]
+
+    model.line_not_used_if_empty = pyo.Constraint(
+        model.LINES,
+        rule=line_not_used_if_empty_rule,
+        doc="If line not in use, no orders assigned"
     )
 
     return model
