@@ -1,9 +1,9 @@
 """
-Capacity Constraints for Problem_4_1_c2
+Capacity Constraints for Problem_3
 
 Implements line capacity constraints to prevent overlapping orders on the same line.
 
-From Problem_4_1_c2.pdf Page 4:
+From Problem_3.pdf Page 4:
 - s(k) ≥ c(i) + s(i,k) - T_max * (3 - x(i,j) - x(k,j) - y(i,k))  ∀i < k ∀j
 - s(i) ≥ c(k) + s(k,i) - T_max * (2 - x(i,j) - x(k,j) + y(i,k))  ∀i < k ∀j
 

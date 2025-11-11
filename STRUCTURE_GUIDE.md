@@ -54,7 +54,8 @@ packing-schedule-example/
 │   │           └── workforce.py
 │   ├── examples/               # Example scripts
 │   │   ├── problem_3_example.py
-│   │   └── problem_3_configurable_example.py
+│   │   ├── problem_3_configurable_example.py
+│   │   └── problem_3_inventory_example.py
 │   ├── tests/                  # Test files
 │   │   └── test_basic.py
 │   ├── setup.py               # Package installation config
@@ -181,6 +182,17 @@ Flexible scenario generator for the simple packing model.
 - Automatic data generation
 - Easy parameter adjustment
 - Multiple scenario testing
+
+### 3. Problem 3 Inventory Example
+**File**: `project2/examples/problem_3_inventory_example.py`
+
+Demonstrates inventory-first fulfillment on a single production line.
+- 1 production line (sequential processing)
+- Initial inventory: 3 units Type 1, 2 units Type 2
+- 3 shipping demands
+- Shows when inventory vs. production is used
+- Clear visualization of inventory depletion
+- Inventory-first fulfillment strategy
 
 ## Dependencies
 

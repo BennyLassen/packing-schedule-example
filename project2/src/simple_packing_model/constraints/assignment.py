@@ -1,5 +1,5 @@
 """
-Assignment Constraints for Problem_4_1_c2
+Assignment Constraints for Problem_3
 
 Implements:
 - One assignment: Each order at most assigned to only one line
@@ -13,9 +13,9 @@ import pyomo.environ as pyo
 
 def define_assignment_constraints(model):
     """
-    Define assignment constraints for Problem_4_1_c2.
+    Define assignment constraints for Problem_3.
 
-    From Problem_4_1_c2.pdf Page 4:
+    From Problem_3.pdf Page 4:
     1. One assignment: ∑_j x(i,j) ≤ 1  ∀i
     2. Processing time: c(i) = s(i) + ∑_j p(i,j) * x(i,j)  ∀i
     3. Time horizon: s(i) ≥ 0  ∀i

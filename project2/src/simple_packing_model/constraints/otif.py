@@ -1,9 +1,9 @@
 """
-OTIF (On-Time In-Full) Constraints for Problem_4_1_c2
+OTIF (On-Time In-Full) Constraints for Problem_3
 
 Implements lateness tracking and late order identification.
 
-From Problem_4_1_c2.pdf Page 5:
+From Problem_3.pdf Page 5:
 - Lateness calculation: lateness(d) ≥ ship(d) - due(d)
 - Lateness non-negativity: lateness(d) ≥ 0
 - Late order identification using binary indicators
@@ -14,7 +14,7 @@ import pyomo.environ as pyo
 
 def define_otif_constraints(model):
     """
-    Define OTIF (On-Time In-Full) constraints for Problem_4_1_c2.
+    Define OTIF (On-Time In-Full) constraints for Problem_3.
 
     From Page 5:
     Lateness:

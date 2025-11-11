@@ -1,7 +1,7 @@
 """
-Example usage of Problem_4_1_c2 Packing Schedule Model
+Example usage of Problem_3 Packing Schedule Model
 
-This script demonstrates how to use the Problem_4_1_c2 model with sample data.
+This script demonstrates how to use the Problem_3 model with sample data.
 """
 
 import numpy as np
@@ -12,12 +12,12 @@ import os
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(project_root, 'src'))
 
-from simple_packing_model import PackingScheduleModelProblem4_1_c2
+from simple_packing_model import PackingScheduleModelProblem3
 
 
 def create_sample_data():
     """
-    Create sample problem data for the Problem_4_1_c2 model.
+    Create sample problem data for the Problem_3 model.
 
     Returns:
         Dictionary with all required input data.
@@ -101,7 +101,7 @@ def main():
     Main function to run the example.
     """
     print("="*80)
-    print("Problem_4_1_c2 Packing Schedule Model - Example")
+    print("Problem_3 Packing Schedule Model - Example")
     print("="*80)
 
     # Create sample data
@@ -119,7 +119,7 @@ def main():
 
     # Create model
     print("\n2. Building optimization model...")
-    model = PackingScheduleModelProblem4_1_c2(data)
+    model = PackingScheduleModelProblem3(data)
     print("   Model built successfully!")
 
     # Display model statistics

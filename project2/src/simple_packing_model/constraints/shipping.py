@@ -1,9 +1,9 @@
 """
-Shipping/Demand Constraints for Problem_4_1_c2
+Shipping/Demand Constraints for Problem_3
 
 Implements demand tracking and shipping constraints.
 
-From Problem_4_1_c2.pdf Page 6:
+From Problem_3.pdf Page 6:
 - Tracking produced items for demand
 - Each order ships exactly once
 - Ship no earlier than due time
@@ -14,7 +14,7 @@ import pyomo.environ as pyo
 
 def define_shipping_constraints(model):
     """
-    Define shipping and demand constraints for Problem_4_1_c2.
+    Define shipping and demand constraints for Problem_3.
 
     From Page 6:
     1. Tracking produced items: prodbefore(u,d) = ∑_{i:type(i)=u} prodorder(i,d)
@@ -64,7 +64,7 @@ def define_shipping_constraints(model):
         """
         If order i is produced before demand d, it must be assigned to a line.
 
-        Updated from Problem_4_1_c2.pdf Page 6:
+        Updated from Problem_3.pdf Page 6:
         [prodorder(i,d) = 1] ⇒ [c(i) ≤ ship(d) ∧ x(i,j) = 1]
 
         The assignment part is reformulated as:

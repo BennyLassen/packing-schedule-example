@@ -1,9 +1,9 @@
 """
-Workforce Constraints for Problem_4_1_c2
+Workforce Constraints for Problem_3
 
 Implements workforce tracking based on events (start and completion times).
 
-From Problem_4_1_c2.pdf Page 8:
+From Problem_3.pdf Page 8:
 - Active workers per time slot (event)
 - Maximum and minimum workforce tracking
 - Workforce range calculation
@@ -14,7 +14,7 @@ import pyomo.environ as pyo
 
 def define_workforce_constraints(model):
     """
-    Define workforce tracking constraints for Problem_4_1_c2.
+    Define workforce tracking constraints for Problem_3.
 
     From Page 8:
     1. Active workers: active(i,e) = started(i,e) ∧ notcomplete(i,e)

@@ -66,19 +66,22 @@ python problem_3_example.py
 
 # Configurable example (adjust parameters in the file)
 python problem_3_configurable_example.py
+
+# Initial inventory usage example (single line)
+python problem_3_inventory_example.py
 ```
 
 ### Importing in Code
 
 ```python
-from simple_packing_model import PackingScheduleModelProblem4_1_c2
+from simple_packing_model import PackingScheduleModelProblem3
 ```
 
 ### Example Usage
 
 ```python
 import numpy as np
-from simple_packing_model import PackingScheduleModelProblem4_1_c2
+from simple_packing_model import PackingScheduleModelProblem3
 
 # Define problem data
 data = {
@@ -104,7 +107,7 @@ data = {
 }
 
 # Build and solve model
-model = PackingScheduleModelProblem4_1_c2(data)
+model = PackingScheduleModelProblem3(data)
 results = model.solve(solver_name='appsi_highs', time_limit=300)
 
 # Print results
@@ -142,6 +145,21 @@ Simple demonstration with:
 
 ### 2. Configurable Example (problem_3_configurable_example.py)
 Flexible scenario generator allowing you to easily test different problem sizes by modifying configuration parameters at the top of the file.
+
+### 3. Initial Inventory Example (problem_3_inventory_example.py)
+Demonstrates how the optimizer uses existing inventory before producing new orders:
+- 1 production line (sequential processing)
+- 2 product types
+- Initial inventory: 3 units Type 1, 2 units Type 2
+- 3 shipping demands
+- Inventory-first fulfillment strategy
+- Clear visualization of inventory vs. production usage
+
+**Key Learning Points:**
+- Initial inventory is consumed to fulfill early demands
+- Production is delayed until inventory is depleted
+- Only necessary production orders are scheduled
+- Timeline shows when inventory vs. production is used
 
 ## Development
 

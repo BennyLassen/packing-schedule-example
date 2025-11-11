@@ -1,11 +1,11 @@
 """
-Objective Function for Problem_4_1_c2 Formulation
+Objective Function for Problem_3 Formulation
 
-Implements the four-term objective function from Problem_4_1_c2.pdf Page 9:
+Implements the four-term objective function from Problem_3.pdf Page 9:
 1. OTIF: On-Time In-Full delivery performance
 2. WIP: Work-in-progress inventory minimization
 3. Workforce: Workforce variability (range: max - min)
-4. Total not utilized: (Note: The PDF doesn't clearly specify this term)
+4. Total not utilized:
 
 f = α * otif + β * wip_obj + γ * workforce + δ * total_not_utilized
 """
@@ -15,9 +15,9 @@ import pyomo.environ as pyo
 
 class ObjectiveManager:
     """
-    Manages the objective function for Problem_4_1_c2 packing schedule model.
+    Manages the objective function for Problem_3 packing schedule model.
 
-    Problem_4_1_c2 Page 9:
+    Problem_3 Page 9:
     f = α * otif + β * wip_obj + γ * workforce + δ * total_not_utilized
 
     where:
@@ -49,7 +49,7 @@ class ObjectiveManager:
         """
         OTIF term: Minimize late deliveries and lateness.
 
-        Problem_4_1_c2 Page 9:
+        Problem_3 Page 9:
         otif = ∑_d priority(d) * (7 * late(d) + 3 * lateness(d))
 
         This penalizes:
@@ -66,7 +66,7 @@ class ObjectiveManager:
         """
         WIP term: Minimize total inventory across all demands.
 
-        Problem_4_1_c2 Page 9:
+        Problem_3 Page 9:
         wip_obj = ∑_u ∑_d inv(u,d)
 
         Summing inventory across all types and demands.
@@ -81,7 +81,7 @@ class ObjectiveManager:
         """
         Workforce term: Minimize workforce variability.
 
-        Problem_4_1_c2 Page 9:
+        Problem_3 Page 9:
         workforce = workersrange
 
         This is the range of workforce utilization (max - min).
@@ -93,7 +93,7 @@ class ObjectiveManager:
         """
         Total not utilized term: Number of lines fully utilized.
 
-        Problem_4_1_c2 Page 9:
+        Problem_3 Page 9:
         total_not_utilized = ∑_j u(j)
 
         This counts the number of production lines that are in use.
@@ -105,7 +105,7 @@ class ObjectiveManager:
         """
         Define the complete objective function for the model.
 
-        Problem_4_1_c2 Page 9:
+        Problem_3 Page 9:
         minimize: α * otif + β * wip_obj + γ * workforce + δ * total_not_utilized
 
         Four terms weighted by user-specified parameters:

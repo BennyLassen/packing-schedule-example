@@ -1,7 +1,7 @@
 """
-Model Parameters for Problem_4_1_c2 Formulation
+Model Parameters for Problem_3 Formulation
 
-Defines sets and parameters based on Problem_4_1_c2.pdf specification.
+Defines sets and parameters based on Problem_3.pdf specification.
 This formulation tracks events (start/completion times) and uses them for workforce tracking.
 """
 
@@ -11,7 +11,7 @@ import numpy as np
 
 def define_parameters(model, data):
     """
-    Define sets and parameters for the Problem_4_1_c2 packing schedule model.
+    Define sets and parameters for the Problem_3 packing schedule model.
 
     Args:
         model: Pyomo ConcreteModel
@@ -81,7 +81,6 @@ def define_parameters(model, data):
     )
 
     # setup_time(u,v): Setup time for changing from item type u to item type v
-    # Note: Using 'setup_time' instead of 's' to avoid conflict with start time variable
     setup_time = data['setup_time']
     model.setup_time = pyo.Param(
         model.TYPES, model.TYPES,

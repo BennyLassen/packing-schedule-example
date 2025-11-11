@@ -1,7 +1,7 @@
 """
-Problem_4_1_c2 Packing Schedule Model
+Problem_3 Packing Schedule Model
 
-This module implements the MILP formulation from Problem_4_1_c2.pdf.
+This module implements the MILP formulation from Problem_3.pdf.
 
 Key features:
 - Event-based workforce tracking (start and completion events)
@@ -12,7 +12,7 @@ Key features:
 - Workforce variability minimization
 """
 
-from .model import PackingScheduleModelProblem4_1_c2
+from .model import PackingScheduleModelProblem3
 
-__all__ = ['PackingScheduleModelProblem4_1_c2']
+__all__ = ['PackingScheduleModelProblem3']
 __version__ = '1.0.0'

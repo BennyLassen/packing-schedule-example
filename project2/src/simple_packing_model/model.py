@@ -1,7 +1,7 @@
 """
-Main Model Class for Problem_4_1_c2 Formulation
+Main Model Class for Problem_3 Formulation
 
-Implements the complete MILP model from Problem_4_1_c2.pdf with:
+Implements the complete MILP model from Problem_3.pdf with:
 - Event-based workforce tracking
 - Continuous time formulation
 - Setup times and demand fulfillment
@@ -24,11 +24,11 @@ from .constraints import (
 from .objective import define_objective
 
 
-class PackingScheduleModelProblem4_1_c2:
+class PackingScheduleModelProblem3:
     """
-    Packing Schedule Optimization Model (Problem_4_1_c2).
+    Packing Schedule Optimization Model (Problem_3).
 
-    This formulation implements the problem from Problem_4_1_c2.pdf with:
+    This formulation implements the problem from Problem_3.pdf with:
     - Continuous time variables (not discretized)
     - Event-based workforce tracking
     - Setup times between product types
@@ -43,7 +43,7 @@ class PackingScheduleModelProblem4_1_c2:
 
     def __init__(self, data):
         """
-        Initialize the Problem_4_1_c2 packing schedule model.
+        Initialize the Problem_3 packing schedule model.
 
         Args:
             data: Dictionary containing problem data with keys:
@@ -63,7 +63,7 @@ class PackingScheduleModelProblem4_1_c2:
                 - objective_weights: Dict with beta, gamma, delta
         """
         self.data = data
-        self.model = pyo.ConcreteModel(name="PackingSchedule_Problem4_1_c2")
+        self.model = pyo.ConcreteModel(name="PackingSchedule_Problem3")
 
         # Build the model
         self._build_model()
@@ -262,7 +262,7 @@ class PackingScheduleModelProblem4_1_c2:
         solution = self.get_solution()
 
         print("\n" + "="*80)
-        print("SOLUTION SUMMARY (Problem_4_1_c2 Model)")
+        print("SOLUTION SUMMARY (Problem_3 Model)")
         print("="*80)
 
         # Objective value

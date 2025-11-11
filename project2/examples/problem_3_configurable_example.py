@@ -1,5 +1,5 @@
 """
-Configurable Scenario Example for Problem_4_1_c2 Model
+Configurable Scenario Example for Problem_3 Model
 
 This example allows easy configuration of problem dimensions to explore different
 scales and scenarios. Simply change the configuration parameters in the CONFIG
@@ -24,7 +24,7 @@ WHAT THIS EXAMPLE DEMONSTRATES:
 1. How to easily scale the problem for testing
 2. Automatic generation of realistic input parameters
 3. Impact of problem size on solving time
-4. Flexibility of the Problem_4_1_c2 optimization model
+4. Flexibility of the Problem_3 optimization model
 
 KEY DIFFERENCES FROM PROBLEM_4_1:
 - Uses continuous time (not discrete time slots)
@@ -67,7 +67,7 @@ This example automatically generates:
 - Demand quantities that match order types
 - Priority weights based on urgency
 - Initial inventory (configurable)
-- All required parameters for the Problem_4_1_c2 model
+- All required parameters for the Problem_3 model
 """
 
 import numpy as np
@@ -79,7 +79,7 @@ import os
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(project_root, 'src'))
 
-from simple_packing_model import PackingScheduleModelProblem4_1_c2
+from simple_packing_model import PackingScheduleModelProblem3
 
 
 # ============================================================================
@@ -380,7 +380,7 @@ def create_configurable_data(config):
         config: Configuration dictionary
 
     Returns:
-        dict: Complete problem data for Problem_4_1_c2 optimization
+        dict: Complete problem data for Problem_3 optimization
     """
     print("\n" + "="*80)
     print("GENERATING PROBLEM DATA FROM CONFIGURATION")
@@ -698,11 +698,11 @@ def print_detailed_schedule(solution, config, max_items_to_show=10):
 
 def main():
     """
-    Run the configurable scenario example for Problem_4_1_c2.
+    Run the configurable scenario example for Problem_3.
     """
 
     print("="*80)
-    print("PROBLEM_4_1_C2 CONFIGURABLE SCENARIO EXAMPLE")
+    print("PROBLEM_3 CONFIGURABLE SCENARIO EXAMPLE")
     print("Flexible Problem Size Configuration (Continuous Time Formulation)")
     print("="*80)
 
@@ -754,9 +754,9 @@ def main():
     print(f"\nData creation time: {data_time:.2f} seconds")
 
     # Build model
-    print("\n[Step 2] Building Problem_4_1_c2 optimization model...")
+    print("\n[Step 2] Building Problem_3 optimization model...")
     build_start = time.time()
-    model = PackingScheduleModelProblem4_1_c2(data)
+    model = PackingScheduleModelProblem3(data)
     build_time = time.time() - build_start
 
     print(f"\nModel built successfully!")

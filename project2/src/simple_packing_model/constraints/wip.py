@@ -1,9 +1,9 @@
 """
-WIP (Work-in-Progress) Constraints for Problem_4_1_c2
+WIP (Work-in-Progress) Constraints for Problem_3
 
 Implements inventory balance equations.
 
-From Problem_4_1_c2.pdf Page 7:
+From Problem_3.pdf Page 7:
 - Inventory balance equation tracking WIP levels
 - Shipped timing constraints
 """
@@ -13,12 +13,7 @@ import pyomo.environ as pyo
 
 def define_wip_constraints(model):
     """
-    Define WIP tracking constraints for Problem_4_1_c2.
-
-    From Page 7 (CORRECTED):
-    Inventory balance equation:
-    inv(u,d) = inv0(u) + prodbefore(u,d) - ∑_{d1:prodtype(d1)=u} shipped(d1,d) * qty(d1)  ∀u ∀d
-    inv(u,d) ≥ 0  ∀u ∀d
+    Define WIP tracking constraints for Problem_3.
 
     Shipped timing:
     [shipped(d1,d) = 1] ⇒ [ship(d1) ≤ ship(d)]

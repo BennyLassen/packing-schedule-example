@@ -1,7 +1,7 @@
 """
-Decision Variables for Problem_4_1_c2 Formulation
+Decision Variables for Problem_3 Formulation
 
-Implements all decision variables from Problem_4_1_c2.pdf including:
+Implements all decision variables from Problem_3.pdf including:
 - Core assignment variables: x(i,j), s(i), c(i)
 - Workforce tracking: started(i,e), notcomplete(i,e), workersused(t), workersmax, workersmin
 - WIP tracking: prodbefore(u,d), prodorder(i,d), inv(u,d), ship(d)
@@ -12,7 +12,7 @@ import pyomo.environ as pyo
 
 def define_variables(model):
     """
-    Define all decision variables for Problem_4_1_c2 packing schedule model.
+    Define all decision variables for Problem_3 packing schedule model.
 
     Variables are organized into groups:
     1. Core assignment and timing variables
@@ -59,7 +59,7 @@ def define_variables(model):
     )
 
     # u(j): Line j is in use (binary)
-    # From Problem_4_1_c2.pdf Page 1
+    # From Problem_3.pdf Page 1
     model.u = pyo.Var(
         model.LINES,
         domain=pyo.Binary,
@@ -93,9 +93,6 @@ def define_variables(model):
     )
 
     # workersused(e): Total workers actually working at event e
-    # Note: In the PDF it says workersused(t), but we track at events
-    # We'll use a continuous variable that can be relaxed to real [0, W]
-    # We need to know max workers W from data
     max_workers = model.n_orders  # Assume max workers = max concurrent orders
     model.workersused = pyo.Var(
         model.EVENTS,
