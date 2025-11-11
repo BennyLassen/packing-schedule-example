@@ -147,3 +147,8 @@ cython_debug/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Solver output files
+*.lp
+*.mps
+*.sol
