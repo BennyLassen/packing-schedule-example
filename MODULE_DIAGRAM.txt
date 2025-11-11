@@ -1,0 +1,219 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    PACKING SCHEDULE MODEL ARCHITECTURE
+═══════════════════════════════════════════════════════════════════════════════
+
+                                   USER CODE
+                                      │
+                                      │ import PackingScheduleModel
+                                      ▼
+                          ┌───────────────────────────┐
+                          │   packing_model/          │
+                          │   __init__.py             │
+                          └─────────────┬─────────────┘
+                                        │
+                                        │ exports
+                                        ▼
+                          ┌───────────────────────────┐
+                          │   model.py                │
+                          │   PackingScheduleModel    │
+                          │   ┌─────────────────────┐ │
+                          │   │ __init__(data)      │ │
+                          │   │ ├─ define_sets()    │ │
+                          │   │ ├─ add_parameters() │ │
+                          │   │ ├─ add_variables()  │ │
+                          │   │ ├─ add_constraints()│ │
+                          │   │ └─ add_objective()  │ │
+                          │   │ solve()             │ │
+                          │   │ get_solution()      │ │
+                          │   └─────────────────────┘ │
+                          └──┬────────┬────────┬──────┘
+                             │        │        │
+                ┌────────────┤        │        └────────────┐
+                │            │        │                     │
+                ▼            ▼        ▼                     ▼
+    ┌─────────────────┐ ┌──────────────────┐  ┌──────────────────┐
+    │ parameters.py   │ │ variables.py     │  │ objective.py     │
+    ├─────────────────┤ ├──────────────────┤  ├──────────────────┤
+    │ ParameterMgr    │ │ VariableManager  │  │ ObjectiveManager │
+    ├─────────────────┤ ├──────────────────┤  ├──────────────────┤
+    │ • Processing    │ │ • Primary vars   │  │ • OTIF term      │
+    │ • Resources     │ │ • OTIF vars      │  │ • WIP term       │
+    │ • Inventory     │ │ • Workforce vars │  │ • Workforce term │
+    │ • OTIF          │ │ • WIP vars       │  │ • Line util term │
+    │ • Workforce     │ │                  │  │                  │
+    └─────────────────┘ └──────────────────┘  └──────────────────┘
+                             │
+                             │
+                             ▼
+                ┌──────────────────────────┐
+                │ constraints/             │
+                │ __init__.py              │
+                └────────┬─────────────────┘
+                         │
+                         │ coordinates
+                         │
+        ┌────────────────┼────────────────┬──────────────┬──────────────┐
+        │                │                │              │              │
+        ▼                ▼                ▼              ▼              ▼
+┌───────────────┐ ┌───────────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
+│ assignment.py │ │ capacity.py   │ │ worker.py│ │ otif.py  │ │ wip.py   │
+├───────────────┤ ├───────────────┤ ├──────────┤ ├──────────┤ ├──────────┤
+│ • one_        │ │ • line_       │ │ • worker_│ │ • start_ │ │ • flow_  │
+│   assignment  │ │   capacity    │ │   working│ │   time   │ │   time   │
+│               │ │ • reserved_   │ │ • worker_│ │ • compl- │ │ • prod-  │
+│               │ │   line_cap    │ │   avail  │ │   etion_ │ │   uction │
+│               │ │ • line_in_use │ │ • resvd_ │ │   time   │ │ • inven- │
+│               │ │               │ │   worker │ │ • late-  │ │   tory   │
+│               │ │               │ │   _cap   │ │   ness   │ │ • wip_   │
+│               │ │               │ │          │ │ • early  │ │   count  │
+└───────────────┘ └───────────────┘ └──────────┘ └──────────┘ └──────────┘
+        │
+        │
+        ▼
+┌──────────────┐
+│ workforce.py │
+├──────────────┤
+│ • workers_   │
+│   used       │
+│ • workers_   │
+│   max/min    │
+│ • deviation  │
+│ • workforce_ │
+│   change     │
+└──────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                              DATA FLOW
+═══════════════════════════════════════════════════════════════════════════════
+
+Input Data Dictionary
+         │
+         ▼
+    ┌─────────┐
+    │ Sets    │ (ORDERS, LINES, TIME, WORKERS)
+    └────┬────┘
+         │
+         ├──────────────┐
+         ▼              ▼
+    ┌─────────┐   ┌──────────┐
+    │Params   │   │Variables │
+    └────┬────┘   └─────┬────┘
+         │              │
+         └──────┬───────┘
+                ▼
+         ┌─────────────┐
+         │ Constraints │
+         └──────┬──────┘
+                │
+                ▼
+         ┌─────────────┐
+         │  Objective  │
+         └──────┬──────┘
+                │
+                ▼
+         ┌─────────────┐
+         │   Solver    │
+         └──────┬──────┘
+                │
+                ▼
+           Solution Dict
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                            COMPONENT DETAILS
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ parameters.py                                                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Input Parameters (Fixed Values)                                            │
+│ ┌───────────────────────────────────────────────────────────────────────┐ │
+│ │ Processing:     p[i,j], s[i,k,j]                                      │ │
+│ │ Resources:      a[w,t], alpha                                         │ │
+│ │ Inventory:      inv0[i], ship[i,t]                                    │ │
+│ │ OTIF:           due[i], demand[i], priority[i]                        │ │
+│ │ Workforce:      workforce_target                                      │ │
+│ └───────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ variables.py                                                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Decision Variables (To Be Optimized)                                       │
+│ ┌───────────────────────────────────────────────────────────────────────┐ │
+│ │ Primary:        x[i,j,t,w], y[i,k,j], b[i,k], w_working[w,t], ...    │ │
+│ │ OTIF:           late[i], lateness[i], early[i]                        │ │
+│ │ Workforce:      workers_used[t], workers_max, deviation_above[t], ... │ │
+│ │ WIP:            time_start[i], time_completion[i], wip[t], ...        │ │
+│ └───────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ constraints/                                                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Feasibility Rules                                                           │
+│ ┌───────────────────────────────────────────────────────────────────────┐ │
+│ │ assignment.py:   Each order assigned exactly once                     │ │
+│ │ capacity.py:     No overlaps, reserve capacity                        │ │
+│ │ worker.py:       Worker availability respected                        │ │
+│ │ otif.py:         Calculate start/completion/lateness                  │ │
+│ │ wip.py:          Track production, inventory, WIP                     │ │
+│ │ workforce.py:    Track workforce levels and changes                   │ │
+│ └───────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ objective.py                                                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Optimization Goal (Minimize)                                                │
+│ ┌───────────────────────────────────────────────────────────────────────┐ │
+│ │ objective = α*OTIF + β*WIP + γ*Workforce + δ*LineUtil                │ │
+│ │                                                                       │ │
+│ │ OTIF:       Σ priority[i] * (7*late[i] + 3*lateness[i])              │ │
+│ │ WIP:        4*Σ wip[t] + 6*Σ time_flow[i]                            │ │
+│ │ Workforce:  5*range + 3*deviation + 2*changes                        │ │
+│ │ LineUtil:   Σ u[j]                                                   │ │
+│ └───────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                         ADDING NEW COMPONENTS
+═══════════════════════════════════════════════════════════════════════════════
+
+[1] New Parameter                [2] New Variable
+    │                                │
+    ▼                                ▼
+Edit parameters.py              Edit variables.py
+Add in appropriate method       Add in appropriate method
+Done!                           Done!
+
+[3] New Constraint              [4] New Objective Term
+    │                                │
+    ▼                                ▼
+Create constraints/new.py       Edit objective.py
+Define constraint function      Add term method
+Import in __init__.py          Update objective_rule
+Done!                           Done!
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                              KEY BENEFITS
+═══════════════════════════════════════════════════════════════════════════════
+
+Before (Monolithic)              After (Modular)
+───────────────────              ───────────────
+▪ 1 file (750 lines)            ▪ 11 files (~120 lines each)
+▪ Hard to navigate              ▪ Easy to find components
+▪ Difficult to extend           ▪ Simple to add features
+▪ Risky to modify               ▪ Safe, isolated changes
+▪ Complex testing               ▪ Test each module
+▪ One developer at a time       ▪ Parallel development
+
+═══════════════════════════════════════════════════════════════════════════════
+
+For more details, see:
+- ARCHITECTURE.md (detailed design documentation)
+- QUICK_REFERENCE.md (practical usage guide)
+- REFACTORING_SUMMARY.md (refactoring overview)

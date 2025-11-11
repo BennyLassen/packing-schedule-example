@@ -1,0 +1,40 @@
+================================================================================
+PACKING SCHEDULE OPTIMIZATION - DETAILED SOLUTION (Problem 4.1)
+================================================================================
+
+ORDER ASSIGNMENTS
+--------------------------------------------------------------------------------
+Order  1 -> Line  1 | Start: t=  7 | Complete: t= 10 | Worker:  2
+Order  2 -> Line  1 | Start: t=  1 | Complete: t=  3 | Worker:  3
+Order  3 -> Line  1 | Start: t=  3 | Complete: t=  7 | Worker:  3
+
+
+OTIF METRICS
+--------------------------------------------------------------------------------
+Order  1: ON-TIME  | Due: t= 10 | Lateness:   0 | Earliness:   0
+Order  2: ON-TIME  | Due: t= 12 | Lateness:   0 | Earliness:   9
+Order  3: ON-TIME  | Due: t= 15 | Lateness:   0 | Earliness:   8
+
+
+WORKFORCE TIMELINE
+--------------------------------------------------------------------------------
+t= 1:  1 workers | Above target:  0 | Below target:  1
+t= 2:  1 workers | Above target:  0 | Below target:  1
+t= 3:  1 workers | Above target:  0 | Below target:  1
+t= 4:  1 workers | Above target:  0 | Below target:  1
+t= 5:  1 workers | Above target:  0 | Below target:  1
+t= 6:  1 workers | Above target:  0 | Below target:  1
+t= 7:  1 workers | Above target:  0 | Below target:  1
+t= 8:  1 workers | Above target:  0 | Below target:  1
+t= 9:  1 workers | Above target:  0 | Below target:  1
+t=10:  0 workers | Above target:  0 | Below target:  2
+t=11:  0 workers | Above target:  0 | Below target:  2
+t=12:  0 workers | Above target:  0 | Below target:  2
+t=13:  0 workers | Above target:  0 | Below target:  2
+t=14:  0 workers | Above target:  0 | Below target:  2
+t=15:  0 workers | Above target:  0 | Below target:  2
+t=16:  0 workers | Above target:  0 | Below target:  2
+t=17:  0 workers | Above target:  0 | Below target:  2
+t=18:  0 workers | Above target:  0 | Below target:  2
+t=19:  0 workers | Above target:  0 | Below target:  2
+t=20:  0 workers | Above target:  0 | Below target:  2
